@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:kafka="http://www.mulesoft.org/schema/mule/kafka"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:amqp="http://www.mulesoft.org/schema/mule/amqp" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/amqp http://www.mulesoft.org/schema/mule/amqp/current/mule-amqp.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/kafka http://www.mulesoft.org/schema/mule/kafka/current/mule-kafka.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
+	<amqp:config name="AMQP_Config" doc:name="AMQP Config" doc:id="17a9b16b-50af-4e1b-8c90-be1288ee842c" >
+		<amqp:connection host="34.94.157.32" port="5672" username="user" password="password" />
+	</amqp:config>
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="8c7003d8-d33a-4b38-acaf-22aed07d4489" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<kafka:producer-config name="Apache_Kafka_Producer_configuration" doc:name="Apache Kafka Producer configuration" doc:id="61d70883-584a-402e-b29b-50a8cb56fe29" >
+		<kafka:producer-plaintext-connection >
+			<kafka:bootstrap-servers >
+				<kafka:bootstrap-server value="localhost:9092" />
+			</kafka:bootstrap-servers>
+		</kafka:producer-plaintext-connection>
+	</kafka:producer-config>
+	<kafka:consumer-config name="Apache_Kafka_Consumer_configuration" doc:name="Apache Kafka Consumer configuration" doc:id="fd7b8d2f-be81-41a3-8324-e05604931b90" >
+		<kafka:consumer-plaintext-connection >
+			<kafka:bootstrap-servers >
+				<kafka:bootstrap-server value="localhost:9092" />
+			</kafka:bootstrap-servers>
+			<kafka:topic-patterns >
+				<kafka:topic-pattern value="TopicName" />
+			</kafka:topic-patterns>
+		</kafka:consumer-plaintext-connection>
+	</kafka:consumer-config>
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="d7c85e67-1ac6-494a-9fe5-4ce5afb37abc" >
+		<db:my-sql-connection host="127.0.0.1" port="3306" user="root" password="S@i9581772964" database="Training" />
+	</db:config>
+	<flow name="rabbitmqFlow" doc:id="efe2881f-f456-4f4e-93f4-af53b744a864" initialState="stopped">
+		<http:listener doc:name="Listener" doc:id="5c83fc7e-ee02-4c5f-8188-938539fb7e06" config-ref="HTTP_Listener_config" path="/publish"/>
+		<amqp:publish doc:name="Publish" doc:id="46318630-6f89-4fbb-8f75-3ffbd1f5c8c7" config-ref="AMQP_Config" exchangeName="Check123"/>
+	</flow>
+	<flow name="rabbitmqFlow1" doc:id="2b0a0dc7-9408-47af-a6b6-152472b870b6" initialState="stopped">
+		<amqp:listener doc:name="Listener" doc:id="c6fb5e11-09a2-4335-b876-0ae218ae249e" config-ref="AMQP_Config" queueName="new Queue" />
+		<logger level="INFO" doc:name="Logger" doc:id="979e9d12-71a9-4668-8e31-c8ae7acfc87c" message="#[payload]" />
+	</flow>
+	<flow name="rabbitmqFlow2" doc:id="0b390ab6-f74f-4ce3-a6c9-b2b171aad91e" initialState="stopped">
+		<http:listener doc:name="Listener" doc:id="478b2a12-875a-4639-beb6-bfc67f408eff" config-ref="HTTP_Listener_config" path="/Kafka"/>
+		<kafka:publish doc:name="Publish" doc:id="8a71c7ef-4721-46ef-82b1-d77f6762e9a6" config-ref="Apache_Kafka_Producer_configuration" topic="TopicName"/>
+		<ee:transform doc:name="Transform Message" doc:id="0f65880c-8e5a-48e9-97ae-525c5378e4f2" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<flow-ref doc:name="Flow Reference" doc:id="11de7ec7-087f-4cfb-8b4e-77c91d0bde60" name="rabbitmqFlow3"/>
+	</flow>
+	<flow name="rabbitmqFlow4" doc:id="328ed401-a26b-47bc-8393-6a4b73a64ca1" initialState="stopped">
+		<kafka:consume doc:name="Consume" doc:id="ad3e98d4-b9d3-4cf0-8b7c-ce13a50bf892" config-ref="Apache_Kafka_Consumer_configuration" pollTimeoutTimeUnit="MILLISECONDS" ackMode="AUTO"/>
+		<ee:transform doc:name="Transform Message" doc:id="e2f172a5-bb0f-4716-8ec5-d5d98ee37331" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="rabbitmqFlow3" doc:id="b3c2df25-4120-4a2c-8afc-3a5a796c9e68" initialState="stopped">
+		<kafka:message-listener doc:name="Message listener" doc:id="cc6b4a0d-c464-48a4-aab4-283d4dba39d2" config-ref="Apache_Kafka_Consumer_configuration" />
+		<ee:transform doc:name="Transform Message" doc:id="5a149486-e3b8-487b-aa25-a917329f220d">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="rabbitmqFlow5" doc:id="abe862eb-8f9d-4811-8882-f0d76c8f143f" >
+		<http:listener doc:name="Listener" doc:id="0414994d-57b0-45b0-83d9-4de89a7c83de" config-ref="HTTP_Listener_config" path="/localSql" allowedMethods="GET"/>
+		<db:select doc:name="Select" doc:id="362e802b-5b88-4212-84d1-32dc608a09a5" config-ref="Database_Config">
+			<db:sql ><![CDATA[select * from american;]]></db:sql>
+		</db:select>
+		<ee:transform doc:name="Transform Message" doc:id="44b668cb-f97b-48d1-928f-1c21ad47225b" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="insert" doc:id="fb57224a-6bfc-4d3c-996e-0503790c3f45" >
+		<http:listener doc:name="Copy_of_Listener" doc:id="e5efdd7d-cd6a-4b79-a20f-654430fd787b" config-ref="HTTP_Listener_config" path="/localSql" allowedMethods="POST" />
+		<db:insert doc:name="Copy_of_Insert" doc:id="0da9905e-ba95-45f7-a47f-3410a98691aa" config-ref="Database_Config">
+			<db:sql><![CDATA[insert into american (id,origin,destination,price,avaliableseats,totalseats,planetype,departdate) values 
+(:id,:origin,:destination,:price,:avaliableseats,:totalseats,:planetype,:departdate);
+]]></db:sql>
+			<db:input-parameters><![CDATA[#[{
+	id: payload.id,
+	origin: payload.origin,
+	destination: payload.destination,
+	price:payload.price,
+	avaliableseats:payload.avaliableseats,
+	totalseats:payload.totalseats,
+	planetype:payload.planetype,
+	departdate:payload.departdate
+}]]]></db:input-parameters>
+		</db:insert>
+		<ee:transform doc:name="Copy_of_Transform Message" doc:id="0ddf1068-ddc4-4c9a-90c8-385beaab1e60" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+if(payload.affectedRows==0) "not able to insert" else ("inserted " ++ (payload.affectedRows default " "))]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>
