@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="b0d28af4-bf35-4ccf-b796-68d8518b3127" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="fa3_trainFlow" doc:id="735be83a-6381-4db3-a7ff-f39357b9d200" >
+		<http:listener doc:name="Listener" doc:id="f9f73791-6b9a-4d5f-afbf-44072fec9810" config-ref="HTTP_Listener_config" path="/employees"/>
+		<set-payload value="#[payload]" doc:name="Set Payload" doc:id="4ff5c0f2-4ed0-407c-858d-ea3106e62942" />
+	</flow>
+</mule>
