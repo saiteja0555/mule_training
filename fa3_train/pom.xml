@@ -32,8 +32,19 @@
 				<version>${mule.maven.plugin.version}</version>
 				<extensions>true</extensions>
 				<configuration>
+				<cloudHubDeployment>
+                        <uri>https://anypoint.mulesoft.com</uri>
+                        <username>saiteja0555_1</username>
+                        <password>S@i9581772964</password>
+                        <environment>Sandbox</environment>
+                        <muleVersion>4.3.0</muleVersion>
+                        <workers>1</workers>
+                        <workerType>Micro</workerType>
+                        <applicationName>fa3-training-tester</applicationName>
+                        <objectStoreV2>true</objectStoreV2>
+                    </cloudHubDeployment>	
 				</configuration>
-			</plugin>
+            </plugin>
 		</plugins>
 	</build>
 
