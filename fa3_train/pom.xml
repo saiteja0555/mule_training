@@ -45,8 +45,35 @@
                     </cloudHubDeployment>	
 				</configuration>
             </plugin>
+            <plugin>
+                <groupId>org.sonatype.plugins</groupId>
+                <artifactId>nexus-staging-maven-plugin</artifactId>
+                <version>1.6.6</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <serverId>nexus</serverId>
+                    <nexusUrl>http://localhost:9081/nexus/</nexusUrl>
+                    <skipStaging>true</skipStaging>
+                </configuration>
+                <executions>
+                       <execution>
+                         <id>default-deploy</id>
+                         <phase>deploy</phase>
+                         <goals>
+                           <goal>deploy</goal>
+                         </goals>
+                       </execution>
+                </executions>   
+            </plugin>
 		</plugins>
 	</build>
+	<distributionManagement>
+        <snapshotRepository>
+            <id>fa3_train</id>
+            <name>fa3repo</name>
+            <url>http://127.0.0.1:8091/repository/fa3_train/</url>
+        </snapshotRepository>
+    </distributionManagement>
 
 	<dependencies>
         <dependency>
