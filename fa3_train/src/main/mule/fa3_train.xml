@@ -10,7 +10,7 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 	</http:listener-config>
 	<flow name="fa3_trainFlow" doc:id="735be83a-6381-4db3-a7ff-f39357b9d200" >
 		<http:listener doc:name="Listener" doc:id="f9f73791-6b9a-4d5f-afbf-44072fec9810" config-ref="HTTP_Listener_config" path="/employees"/>
-		<set-payload value='#["checking fa3_listner"]' doc:name="Set Payload" doc:id="4ff5c0f2-4ed0-407c-858d-ea3106e62942" />
+		<set-payload value='#["checking fa2_listner"]' doc:name="Set Payload" doc:id="4ff5c0f2-4ed0-407c-858d-ea3106e62942" />
 		<logger level="INFO" doc:name="Logger" doc:id="affd0db6-f16a-4b64-9cee-13145d593fdf" message="#[payload]"/>
 	</flow>
 </mule>

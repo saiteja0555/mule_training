@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="new-test-suite.xml" />
+	<munit:test name="new-test-suite-fa3_trainFlowTest" doc:id="fe438e06-b36b-40d8-a4d9-9d317ead53d9" description="Test">
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to fa3_trainFlow" doc:id="cd2c51c0-00e5-4d9d-a34c-c0003ec8f5cc" name="fa3_trainFlow" />
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="3e0ba9ba-1612-4cf2-bafc-d821c7d1d042" actual="#[payload as String]" message='#["not expected output"]' expected='#["checking fa2_listner"]'/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="new-test-suiteTest" doc:id="94821197-2230-4135-bd44-e5a00e85cd99" >
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to fa3_trainFlow" doc:id="e465473e-f215-4cc1-bcde-7d230da3625b" name="fa3_trainFlow" />
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="aa0e3346-e095-4063-ae8f-6c03f1eace9b" is='#[MunitTools::containsString("fa2")]' expression="#[payload]" message='#["not contains fa2"]'/>
+		</munit:validation>
+	</munit:test>
+
+
+</mule>
